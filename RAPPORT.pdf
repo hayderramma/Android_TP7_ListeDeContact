@@ -1,0 +1,285 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R 6 0 R 8 0 R] /Count 3 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 3100 >>
+stream
+BT
+/F1 11 Tf
+50 792 Td
+14 TL
+(Compte rendu - TP Android Contacts V3) Tj
+T*
+() Tj
+T*
+(Etudiant : ________________   Date : ________________) Tj
+T*
+(Projet : ContactsV3 - Kotlin, XML, AndroidX Fragment/RecyclerView, Google Maps.) Tj
+T*
+() Tj
+T*
+(1. Architecture des fragments) Tj
+T*
+() Tj
+T*
+(L application ne possede qu une seule activite, MainActivity. Son layout ne contient qu un) Tj
+T*
+(FragmentContainerView \(fragment_container\). Tous les ecrans sont des fragments dynamiques :) Tj
+T*
+() Tj
+T*
+(Fragment   Role   Layout) Tj
+T*
+(--- --- ---) Tj
+T*
+(ListeContactsFragment   Recherche + RecyclerView, etat vide   fragment_liste.xml, item_contact.xml) Tj
+T*
+(DetailContactFragment   Consultation/edition, actions V2, validation GPS   fragment_detail.xml) Tj
+T*
+(CarteContactFragment   MapView, marqueur et centrage   fragment_carte.xml) Tj
+T*
+() Tj
+T*
+(MainActivity ne cree la liste que si savedInstanceState == null. Le FragmentContainerView restaure) Tj
+T*
+(les fragments deja presents apres rotation : aucun doublon n est empile. Les transactions utilisent) Tj
+T*
+(replace\(\) et addToBackStack\(\) ; le retour materiel depile la pile et un) Tj
+T*
+(addOnBackStackChangedListener met a jour le titre. La carte possede un bouton Retour au detail qui) Tj
+T*
+(appelle popBackStack\(\).) Tj
+T*
+() Tj
+T*
+(CarteContactFragment utilise une MapView avec delegation explicite du cycle de vie \(onCreate,) Tj
+T*
+(onStart, onResume, onPause, onStop, onSaveInstanceState, onLowMemory, onDestroyView\) protegee par) Tj
+T*
+(mapViewInitialized. Cela evite les doublons de fragments enfants SupportMapFragment lors des) Tj
+T*
+(recreations.) Tj
+T*
+() Tj
+T*
+(2. Choix de communication entre fragments) Tj
+T*
+() Tj
+T*
+(- Bundle avec identifiant stable : la liste ouvre le detail avec) Tj
+T*
+(DetailContactFragment.newInstance\(contact.id\). transmettre un id plutot qu une position de ligne) Tj
+T*
+(garantit le bon contact apres filtrage.) Tj
+T*
+(- ViewModel partage au niveau de l activite : ContactsViewModel detient la collection en memoire.) Tj
+T*
+(DetailContactFragment appelle update\(contact\) ; LiveData emet une nouvelle liste et la RecyclerView) Tj
+T*
+(se rafraichit immediatement. Ce choix a ete prefere au Fragment Result API car il existe une source) Tj
+T*
+(de verite unique qui doit survivre a la rotation : aucun resultat inter-fragments n est necessaire.) Tj
+T*
+(- DetailViewModel \(propre au fragment\) conserve le brouillon sous forme de texte brut : une saisie) Tj
+T*
+(meme invalide survit a la rotation, et Annuler ne modifie jamais le ViewModel partage.) Tj
+T*
+(- Carte : le Bundle contient id, nom et coordonnees deja validees ; le fragment carte n a pas besoin) Tj
+T*
+(d aceder au modele.) Tj
+T*
+() Tj
+T*
+(3. RecyclerView) Tj
+T*
+() Tj
+T*
+(La ListView de la V2 est remplacee par une RecyclerView avec ContactAdapter \(ListAdapter + DiffUtil\)) Tj
+T*
+(et ContactViewHolder. Chaque ligne affiche photo, nom complet, prenom et telephone. Le clic transmet) Tj
+T*
+(contact.id. submitList\(\) calcule les differences : la liste filtree s affiche sans rechargement) Tj
+T*
+(global.) Tj
+T*
+() Tj
+T*
+ET
+
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 3245 >>
+stream
+BT
+/F1 11 Tf
+50 792 Td
+14 TL
+(4. Strategie de filtrage) Tj
+T*
+() Tj
+T*
+(ContactFilter.apply\(contacts, query\) est isole du Fragment et testable. Il applique) Tj
+T*
+(trim\(\).lowercase\(Locale.getDefault\(\)\) puis contains sur nom, prenom et telephone. Une requete vide) Tj
+T*
+(renvoie tous les contacts ; le TextView emptyTextView s affiche si le resultat est vide. Le clic sur) Tj
+T*
+(une ligne filtree utilise l identifiant du Contact present dans la liste filtree, donc aucun erreur) Tj
+T*
+(d indice.) Tj
+T*
+() Tj
+T*
+(5. Integration Google Maps) Tj
+T*
+() Tj
+T*
+(Le SDK play-services-maps fournit MapView. La cle est lue depuis local.properties \(gitignore\) par) Tj
+T*
+(app/build.gradle.kts et injectee via manifestPlaceholders. Aucune cle n est versionnee ; la) Tj
+T*
+(documentation indique comment la restreindre par nom de paquet et empreinte SHA-1. La carte centre) Tj
+T*
+(avec CameraUpdateFactory.newLatLngZoom\(position, 15f\) et ajoute un marqueur portant le nom. Si les) Tj
+T*
+(coordonnees sont absentes ou invalides, un message explicite remplace la carte. Aucune autorisation) Tj
+T*
+(de localisation n est demandee.) Tj
+T*
+() Tj
+T*
+(6. Tests effectues) Tj
+T*
+() Tj
+T*
+(Tests unitaires \(gradlew test\) : requete vide, filtrage par nom avec casse differente, par prenom,) Tj
+T*
+(par telephone, recherche sans resultat, validation des coordonnees \(valides, valeurs limites, non) Tj
+T*
+(numeriques, hors limites, champs vides\).) Tj
+T*
+(A verifier sur appareil/emulateur : filtrage et effacement, selection dans une liste filtree,) Tj
+T*
+(modification puis retour liste actualisee, annulation, Appel/E-mail/Galerie/Camera avec annulations,) Tj
+T*
+(coordonnees absentes/non numeriques/hors limites, marqueur et centrage Maps, retour carte vers) Tj
+T*
+(detail, rotation et bouton Retour.) Tj
+T*
+() Tj
+T*
+(7. Difficultes rencontrees) Tj
+T*
+() Tj
+T*
+(- TakePicture natif n ajoute pas FLAG_GRANT_WRITE_URI_PERMISSION : un contrat personnalise a ete) Tj
+T*
+(ecrit et un FileProvider declare dans le manifeste et file_paths.xml.) Tj
+T*
+(- La persistance de l URI galerie depend du fournisseur : takePersistableUriPermission est tente) Tj
+T*
+(dans un try/catch et ImageLoader fournit une image de repli.) Tj
+T*
+(- La rotation perdait les champs saisis : le brouillon texte dans DetailViewModel resout le) Tj
+T*
+(probleme.) Tj
+T*
+(- Sans cle API, le projet doit tout de meme compiler : placeholder vide par defaut et message) Tj
+T*
+(explicite cote carte.) Tj
+T*
+() Tj
+T*
+(8. Questions de comprehension) Tj
+T*
+() Tj
+T*
+(1. Activity vs Fragment : une Activity est le point d entree systeme \(fenetre, cycle de vie propre\)) Tj
+T*
+(; un Fragment est un module d interface reutilisable, heberge dans une Activity, avec son propre) Tj
+T*
+(cycle de vie et capable d etre ajoute/remplace dynamiquement.) Tj
+T*
+(2. FragmentContainerView fournit un conteneur XML integre au FragmentManager \(restauration et) Tj
+T*
+(transactions fiables\). addToBackStack\(\) permet de revenir a l ecran precedent avec le bouton Retour) Tj
+T*
+(au lieu de le detruire.) Tj
+T*
+(3. RecyclerView.Adapter cree et lie les vues aux donnees ; ViewHolder conserve les references aux) Tj
+T*
+(vues d une ligne pour eviter les findViewById repetees lors du defilement.) Tj
+T*
+ET
+
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 875 >>
+stream
+BT
+/F1 11 Tf
+50 792 Td
+14 TL
+(4. En filtrant on ne modifie pas la collection source et transmettons l identifiant stable du) Tj
+T*
+(Contact ; l Adapter travaille sur la liste filtree mais le clic ne depend jamais de sa position.) Tj
+T*
+(5. L identifiant reste stable alors que la position de ligne change apres filtrage, tri ou) Tj
+T*
+(suppression ; il garantit l ouverture du bon contact.) Tj
+T*
+(6. Stocker la cle uniquement dans local.properties ignore par Git, la lire au build via) Tj
+T*
+(manifestPlaceholders, ne jamais committer le fichier, et la restreindre cote Google Cloud \(SHA-1 +) Tj
+T*
+(nom de paquet\).) Tj
+T*
+() Tj
+T*
+(9. Barème indicatif) Tj
+T*
+() Tj
+T*
+(Fonctionnalites V2 conservees 4 ; fragments et navigation 4 ; RecyclerView et filtrage 4 ; GPS et) Tj
+T*
+(Google Maps 4 ; robustesse et tests 2 ; GitHub, captures et compte rendu 2. Total 20.) Tj
+T*
+ET
+
+endstream
+endobj
+xref
+0 10
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000127 00000 n 
+0000000224 00000 n 
+0000000350 00000 n 
+0000003502 00000 n 
+0000003628 00000 n 
+0000006925 00000 n 
+0000007051 00000 n 
+trailer
+<< /Size 10 /Root 1 0 R >>
+startxref
+7977
+%%EOF
