@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore
-import androidx.activity.result.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContract
 
 /**
  * ActivityResultContracts.TakePicture n'ajoute pas le droit d'ecriture sur l'Uri
